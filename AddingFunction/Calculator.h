@@ -22,8 +22,7 @@ class Calculator
 	bool configureExpression(const string& basicExpression);
 	void infixToPostfix();
 public:
-	Calculator() = delete;
-	Calculator(string basicExpression);
+	Calculator(string basicExpression = "2+3");
 	void insertNewExpression(string basicExpression);
 	double calculateResult();
 };

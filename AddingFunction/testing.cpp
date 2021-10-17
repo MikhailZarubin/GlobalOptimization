@@ -3,18 +3,16 @@
 int main()
 {
 	string expression;
+	Calculator calculator;
 
-	while(expression != "F")
+	while(true)
 	{
 		std::cout << "EXPRESSION: ";
 		getline(std::cin, expression);
 
-		Calculator calculator(expression);
+		calculator.insertNewExpression(expression);
 
-	    calculator.insertNewExpression(expression);
-		calculator.calculateResult();
-
-		std::cout << "RESULT: " << calculator.calculateResult() << '\n' << "PRESS F FOR EXIT" << '\n';
+		std::cout << "RESULT: " << calculator.calculateResult() << '\n';
 	}
 
 	return 0;
