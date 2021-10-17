@@ -7,7 +7,7 @@ namespace
 	const char delimiter = '|';
 	int DELIMITER_PRIORITY = -1; // |
 	int NULL_PRIORITY = 0; // number
-	int LOW_PRIORITY = 1; // brackets
+	int LOW_PRIORITY = 1; // brackets and beginnings of complex functions
 	int MEDIUM_PRIORITY = 2; // + and -
 	int HIGH_PRIORITY = 3; // * and /
 	int HIGHEST_PRIORITY = 4; // ^
@@ -74,7 +74,7 @@ bool Calculator::configureExpression(const string& basicExpression)
 		{
 			string::size_type size = infixExpression.size();
 
-			if ((size == 0 || (size > 0 && infixExpression[size - 1] == '(')) && basicExpression[i] == '-')
+			if ((size == 0 || (size > 0 && getPriority(infixExpression[size - 1]) == ::LOW_PRIORITY)) && basicExpression[i] == '-')
 				infixExpression += '0';
 
 			infixExpression += basicExpression[i];
