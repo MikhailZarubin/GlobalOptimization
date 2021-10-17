@@ -5,7 +5,7 @@ using std::stack;
 namespace
 {
 	const char delimiter = '|';
-	int DELIMITER_PRIORITY = 0; // |
+	int DELIMITER_PRIORITY = -1; // |
 	int NULL_PRIORITY = 0; // number
 	int LOW_PRIORITY = 1; // brackets
 	int MEDIUM_PRIORITY = 2; // + and -
@@ -71,7 +71,14 @@ bool Calculator::configureExpression(const string& basicExpression)
 		}
 
 		else if (basicExpression[i] != ' ')
+		{
+			string::size_type size = infixExpression.size();
+
+			if ((size == 0 || (size > 0 && infixExpression[size - 1] == '(')) && basicExpression[i] == '-')
+				infixExpression += '0';
+
 			infixExpression += basicExpression[i];
+		}
 	}
 
 	infixExpression += ")";
@@ -137,7 +144,7 @@ void Calculator::infixToPostfix()
 				postfixExpression += topStack;
 		}
 
-		else 
+		else
 		{
 			topStack = operationsStack.top();
 
