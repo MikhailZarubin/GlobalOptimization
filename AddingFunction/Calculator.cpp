@@ -4,6 +4,7 @@ using std::stack;
 
 namespace
 {
+	string defaultExpression = "5*(4-2)";
 	const char delimiter = '|';
 	int DELIMITER_PRIORITY = -1; // |
 	int NULL_PRIORITY = 0; // number
@@ -12,6 +13,7 @@ namespace
 	int HIGH_PRIORITY = 3; // * and /
 	int HIGHEST_PRIORITY = 4; // ^
 }
+
 
 int Calculator::getPriority(char symbol) const
 {
@@ -46,7 +48,10 @@ bool Calculator::openingBrackets(char symbol) const
 }
 
 
-Calculator::Calculator(std::string basicExpression) : infixExpression{}, postfixExpression{}, flagNewExpression{ true }, lastResult{ 0. }
+Calculator::Calculator() : Calculator(::defaultExpression) {}
+
+
+Calculator::Calculator(const string& basicExpression) : infixExpression{}, postfixExpression{}, flagNewExpression{ true }, lastResult{ 0. }
 {
 	bool correct = configureExpression(basicExpression);
 
@@ -254,7 +259,7 @@ double Calculator::calculateResult()
 }
 
 
-void Calculator::insertNewExpression(string basicExpression)
+void Calculator::replaceExpression(const string& basicExpression)
 {
 	flagNewExpression = true;
 	bool correct = configureExpression(basicExpression);
