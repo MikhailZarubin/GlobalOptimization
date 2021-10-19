@@ -11,7 +11,7 @@ class Calculator
 	string infixExpression;
 	string postfixExpression;
 	bool flagNewExpression;
-	double lastResult;
+	long double lastResult;
 
 	int getPriority(char symbol) const;
 
@@ -25,6 +25,6 @@ public:
 	Calculator();
 	Calculator(const string& basicExpression);
 	void replaceExpression(const string& basicExpression);
-	double calculateResult();
+	long double calculateResult();
 };
 

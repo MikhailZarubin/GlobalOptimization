@@ -12,6 +12,32 @@ namespace
 	int MEDIUM_PRIORITY = 2; // + and -
 	int HIGH_PRIORITY = 3; // * and /
 	int HIGHEST_PRIORITY = 4; // ^
+
+	long double universalPow(long double value, long double exp)
+	{
+		long double error = 0.001;
+		
+		if (exp < 0.0)
+		{
+			value = 1.0 / value;
+			exp = -exp;
+		}
+
+		long double checkedCubRoot = exp / (1. / 3.);
+
+		int counter = 0;
+		while (checkedCubRoot > 1.0 - error)
+		{
+			checkedCubRoot -= 1.0;
+			counter++;
+		}
+
+		if (fabsl(checkedCubRoot) <= error && counter % 3)
+			return powl(cbrtl(value), counter);
+
+		return pow(value, exp);
+
+	}
 }
 
 
@@ -79,7 +105,7 @@ bool Calculator::configureExpression(const string& basicExpression)
 		{
 			string::size_type size = infixExpression.size();
 
-			if ((size == 0 || (size > 0 && getPriority(infixExpression[size - 1]) == ::LOW_PRIORITY)) && basicExpression[i] == '-')
+			if ((size == 0 || (size > 0 && openingBrackets(infixExpression[size - 1]))) && basicExpression[i] == '-')
 				infixExpression += '0';
 
 			infixExpression += basicExpression[i];
@@ -170,16 +196,16 @@ void Calculator::infixToPostfix()
 }
 
 
-double Calculator::calculateResult()
+long double Calculator::calculateResult()
 {
 	if (!flagNewExpression)
 		return lastResult;
 
 	infixToPostfix();
 
-	stack <double> valuesStack;
+	stack <long double> valuesStack;
 
-	double a, b;
+	long double a, b;
 	string number;
 
 	for (string::size_type i = 0; i < postfixExpression.size(); i++)
@@ -214,7 +240,7 @@ double Calculator::calculateResult()
 		case'^':
 			a = valuesStack.top(); valuesStack.pop();
 			b = valuesStack.top();
-			valuesStack.top() = pow(b, a);
+			valuesStack.top() = ::universalPow(b, a);
 			break;
 
 		case's':
@@ -242,7 +268,7 @@ double Calculator::calculateResult()
 			while (i < postfixExpression.size() && getPriority(postfixExpression[i]) == 0 && postfixExpression[i] != ::delimiter)
 				number += postfixExpression[i++];
 
-			valuesStack.push(std::stod(number));
+			valuesStack.push(std::stold(number));
 			number.clear();
 
 			break;

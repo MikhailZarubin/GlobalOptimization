@@ -10,7 +10,7 @@ namespace {
 }
 
 
-Function::Function(const string& expression, double left, double right) : functionExpression{ expression }
+Function::Function(const string& expression, long double left, long double right) : functionExpression{ expression }
 {
 	if (left >= right)
 		throw 0;
@@ -20,7 +20,7 @@ Function::Function(const string& expression, double left, double right) : functi
 }
 
 
-void Function::replaceExpression(const string& newExpression, double newLeft, double newRight)
+void Function::replaceExpression(const string& newExpression, long double newLeft, long double newRight)
 {
 	if (newLeft >= newRight)
 		throw 0;
@@ -32,9 +32,9 @@ void Function::replaceExpression(const string& newExpression, double newLeft, do
 }
 
 
-double Function::getValue(double point) const
+long double Function::getValue(long double point) const
 {
-	if (point < leftBorder || point>rightBorder)
+	if (point < leftBorder || point > rightBorder)
 		throw 0;
 
 	string expressionWithValue = functionExpression;
@@ -53,26 +53,90 @@ double Function::getValue(double point) const
 }
 
 
-GlobalMinimumFunction::GlobalMinimumFunction(const string& expression, double left, double right, double accur, double coeff) : Function(expression, left, right)
+GlobalMinimumFunction::GlobalMinimumFunction(const string& expression, long double left, long double right, long double accur, long double coeff) : Function(expression, left, right), accuracy{ accur }, checkedCoordinates(::comparisonPair), maxDifference{ 0. }
 {
 	if (coeff <= 1.0)
 		throw 0;
 
 	rCoeff = coeff;
-	accuracy = accur;
+
+	long double valueFuncLeftBorder = getValue(leftBorder);
+	long double valueFuncRightBorder = getValue(rightBorder);
+
+	if (valueFuncLeftBorder <= valueFuncRightBorder)
+		globalMinimum = { valueFuncLeftBorder, leftBorder };
+	else
+		globalMinimum = { valueFuncRightBorder, rightBorder };
+
+	checkedCoordinates.insert({ valueFuncLeftBorder, leftBorder });
+	checkedCoordinates.insert({ valueFuncRightBorder, rightBorder });
 }
 
 
-void GlobalMinimumFunction::replaceAccuracy(double newAccuracy)
+void GlobalMinimumFunction::replaceAccuracy(long double newAccuracy)
 {
 	accuracy = newAccuracy;
 }
 
 
-void GlobalMinimumFunction::replaceCoeff(double newCoeff)
+void GlobalMinimumFunction::replaceCoeff(long double newCoeff)
 {
 	if (newCoeff <= 1.0)
 		throw 0;
 
 	rCoeff = newCoeff;
+}
+
+
+doublePair GlobalMinimumFunction::searchGlobalMinimum()
+{
+	bool stopFlag = false;
+
+	while (!stopFlag)
+	{
+		for (auto iter = ++checkedCoordinates.begin(); iter != checkedCoordinates.end(); iter++)
+		{
+			doublePair currentElem = *(iter--);
+			doublePair lastELem = *(iter++);
+
+			long double difference = abs((currentElem.first - lastELem.first) / (currentElem.second - lastELem.second));
+			maxDifference = std::max(maxDifference, difference);
+		}
+
+		long double m = rCoeff * maxDifference;
+
+		if (m == 0)
+			m = 1;
+
+		long double maxValueInterval;
+		auto desiredInterval = ++checkedCoordinates.begin();
+		for (auto iter = ++checkedCoordinates.begin(); iter != checkedCoordinates.end(); iter++)
+		{
+			doublePair currentElem = *(iter--);
+			doublePair lastELem = *(iter++);
+
+			long double temporaryValue = m * (currentElem.second - lastELem.second);
+			long double valueInterval = temporaryValue + (currentElem.first - lastELem.first) * (currentElem.first - lastELem.first) / temporaryValue + 2 * (currentElem.first + lastELem.first);
+
+			if (iter == ++checkedCoordinates.begin() || valueInterval > maxValueInterval)
+			{
+				maxValueInterval = valueInterval;
+				desiredInterval = iter;
+			}
+		}
+
+		doublePair currentElemDesiredInterval = *(desiredInterval--);
+		doublePair lastElemDesiredInterval = *(desiredInterval++);
+
+		long double newCoordinate = (currentElemDesiredInterval.second + lastElemDesiredInterval.second) * 0.5 - (currentElemDesiredInterval.first - lastElemDesiredInterval.first) * 0.5 / m;
+		long double newValue = getValue(newCoordinate);
+		checkedCoordinates.insert({ newValue,newCoordinate });
+
+		if (newValue < globalMinimum.first)
+			globalMinimum = { newValue, newCoordinate };
+
+		stopFlag = currentElemDesiredInterval.second - lastElemDesiredInterval.second <= accuracy;
+	}
+
+	return globalMinimum;
 }

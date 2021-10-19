@@ -7,31 +7,32 @@
 using std::set;
 using std::pair;
 
-using doublePair = pair<double, double>;
+using doublePair = pair<long double, long double>;
 
 class Function
 {
 protected:
-	double leftBorder, rightBorder;
+	long double leftBorder, rightBorder;
 	string functionExpression;
 	
 public:
 	Function() = delete;
-	Function(const string& expression, double left, double right);
-	void replaceExpression(const string& newExpression, double newLeft, double newRight);
-	double getValue(double point) const;
+	Function(const string& expression, long double left, long double right);
+	void replaceExpression(const string& newExpression, long double newLeft, long double newRight);
+	long double getValue(long double point) const;
 };
 
-class GlobalMinimumFunction: public Function
+class GlobalMinimumFunction: protected Function
 {
-	double accuracy, rCoeff;
+	long double accuracy, rCoeff, maxDifference;
+	doublePair globalMinimum;
 	set<doublePair, bool(*) (const doublePair&, const doublePair&)> checkedCoordinates;
 
 public:
 	GlobalMinimumFunction() = delete;
-	GlobalMinimumFunction(const string& expression, double left, double right, double accur, double rCoeff);
-	void replaceAccuracy(double newAccuracy);
-	void replaceCoeff(double newCoeff);
-	double searchGlobalMinimum();
+	GlobalMinimumFunction(const string& expression, long double left, long double right, long double accur, long double rCoeff);
+	void replaceAccuracy(long double newAccuracy);
+	void replaceCoeff(long double newCoeff);
+	doublePair searchGlobalMinimum();
 };
 
