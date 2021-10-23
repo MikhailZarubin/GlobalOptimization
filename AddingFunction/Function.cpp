@@ -91,7 +91,6 @@ void GlobalMinimumFunction::replaceCoeff(long double newCoeff)
 doublePair GlobalMinimumFunction::searchGlobalMinimum()
 {
 	bool stopFlag = false;
-	auto newElem = checkedCoordinates.end();
 
 	while (!stopFlag)
 	{
@@ -100,7 +99,7 @@ doublePair GlobalMinimumFunction::searchGlobalMinimum()
 			doublePair currentElem = *(iter--);
 			doublePair lastELem = *(iter++);
 
-			long double difference = fabsl((currentElem.first - lastELem.first) / (currentElem.second - lastELem.second));
+			long double difference = abs((currentElem.first - lastELem.first) / (currentElem.second - lastELem.second));
 			maxDifference = std::max(maxDifference, difference);
 		}
 
@@ -131,7 +130,7 @@ doublePair GlobalMinimumFunction::searchGlobalMinimum()
 
 		long double newCoordinate = (currentElemDesiredInterval.second + lastElemDesiredInterval.second) * 0.5 - (currentElemDesiredInterval.first - lastElemDesiredInterval.first) * 0.5 / m;
 		long double newValue = getValue(newCoordinate);
-		newElem = checkedCoordinates.insert({ newValue,newCoordinate }).first;
+		checkedCoordinates.insert({ newValue,newCoordinate });
 
 		if (newValue < globalMinimum.first)
 			globalMinimum = { newValue, newCoordinate };
