@@ -33,6 +33,6 @@ public:
 	GlobalMinimumFunction(const string& expression, long double left, long double right, long double accur, long double rCoeff);
 	void replaceAccuracy(long double newAccuracy);
 	void replaceCoeff(long double newCoeff);
-	doublePair searchGlobalMinimum();
+	std::pair<doublePair, int> searchGlobalMinimum();
 };
 

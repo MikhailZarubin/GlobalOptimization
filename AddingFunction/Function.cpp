@@ -88,7 +88,7 @@ void GlobalMinimumFunction::replaceCoeff(long double newCoeff)
 }
 
 
-doublePair GlobalMinimumFunction::searchGlobalMinimum()
+std::pair<doublePair,int> GlobalMinimumFunction::searchGlobalMinimum()
 {
 	bool stopFlag = false;
 
@@ -138,5 +138,5 @@ doublePair GlobalMinimumFunction::searchGlobalMinimum()
 		stopFlag = currentElemDesiredInterval.second - lastElemDesiredInterval.second <= accuracy;
 	}
 
-	return globalMinimum;
+	return { globalMinimum, checkedCoordinates.size() };
 }
