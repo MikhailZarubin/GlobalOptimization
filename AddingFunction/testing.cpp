@@ -12,7 +12,7 @@ int main()
 
 	while (testStrategy < 3)
 	{
-		std::cout << "1. Manual input\n2. Testing Functions\n3. Exit\n";
+		std::cout << "\n1. Manual input\n2. Testing Functions\n3. Exit\n";
 		std::cin >> testStrategy;
 
 		if (testStrategy == 1)
@@ -50,6 +50,9 @@ int main()
 			std::cout << "ACCURACY: ";
 			std::cin >> accuracy;
 
+			std::cout << "R_COEFF: ";
+			std::cin >> r;
+
 			if (file)
 			{
 				while (!file.eof())
@@ -62,9 +65,6 @@ int main()
 
 					file.getline(buffer, bufferSize, '\n');
 					rightBorder = atof(buffer);
-
-					file.getline(buffer, bufferSize, '\n');
-					r = atof(buffer);
 
 					file.getline(buffer, bufferSize, '\n');
 					expectedResult = atof(buffer);
