@@ -6,7 +6,7 @@
 using doublePair = std::pair<long double, long double>;
 
 
-class GlobalSearch: protected Function
+class GlobalSearch: protected FunctionBorder
 {
 	long double accuracy, rCoeff, maxDifference;
 	doublePair globalMinimum;

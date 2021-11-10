@@ -10,7 +10,7 @@ namespace {
 }
 
 
-GlobalSearch::GlobalSearch(const string& expression, long double left, long double right, long double accur, long double coeff) : Function(expression, left, right), accuracy{ accur }, checkedCoordinates(::comparisonPair), maxDifference{ 0. }
+GlobalSearch::GlobalSearch(const string& expression, long double left, long double right, long double accur, long double coeff) : FunctionBorder(expression, left, right), accuracy{ accur }, checkedCoordinates(::comparisonPair), maxDifference{ 0. }
 {
 	if (coeff <= 1.0)
 		throw 0;

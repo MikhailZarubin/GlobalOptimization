@@ -3,33 +3,14 @@
 using std::string;
 
 
-Function::Function(const string& expression, long double left, long double right) : functionExpression{ expression }
+void Function::replaceExpression(const string& newExpression)
 {
-	if (left >= right)
-		throw 0;
-
-	leftBorder = left;
-	rightBorder = right;
-}
-
-
-void Function::replaceExpression(const string& newExpression, long double newLeft, long double newRight)
-{
-	if (newLeft >= newRight)
-		throw 0;
-
-	leftBorder = newLeft;
-	rightBorder = newRight;
-
 	functionExpression = newExpression;
 }
 
 
 long double Function::getValue(long double point) const
 {
-	if (point < leftBorder || point > rightBorder)
-		throw 0;
-
 	string expressionWithValue = functionExpression;
 	string valuePoint = "(" + std::to_string(point) + ")";
 
@@ -48,4 +29,29 @@ long double Function::getValue(long double point) const
 string Function::getExpression() const
 {
 	return functionExpression;
+}
+
+FunctionBorder::FunctionBorder(const string& expression, long double left, long double right) :Function(expression)
+{
+	if (right <= left)
+		throw 0;
+
+	leftBorder = left;
+	rightBorder = right;
+}
+
+void FunctionBorder::replaceExpression(const std::string& newExpression, long double newLeft, long double newRight)
+{
+	if (newRight <= newLeft)
+		throw 0;
+
+	Function::replaceExpression(newExpression);
+}
+
+long double FunctionBorder::getValue(long double point)
+{
+	if (point < leftBorder && point >= rightBorder)
+		throw 0;
+
+	return Function::getValue(point);
 }
