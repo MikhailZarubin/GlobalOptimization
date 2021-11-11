@@ -48,10 +48,20 @@ void FunctionBorder::replaceExpression(const std::string& newExpression, long do
 	Function::replaceExpression(newExpression);
 }
 
-long double FunctionBorder::getValue(long double point)
+long double FunctionBorder::getValue(long double point) const
 {
 	if (point < leftBorder && point >= rightBorder)
 		throw 0;
 
 	return Function::getValue(point);
+}
+
+long double FunctionBorder::getLeftBorder() const
+{
+	return leftBorder;
+}
+
+long double FunctionBorder::getRightBorder() const
+{
+	return rightBorder;
 }

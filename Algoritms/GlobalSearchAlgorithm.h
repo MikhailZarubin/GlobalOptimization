@@ -6,11 +6,14 @@
 using doublePair = std::pair<long double, long double>;
 
 
-class GlobalSearch: protected FunctionBorder
+class GlobalSearch
 {
+	FunctionBorder function;
 	long double accuracy, rCoeff, maxDifference;
 	doublePair globalMinimum;
 	std::set<doublePair, bool(*) (const doublePair&, const doublePair&)> checkedCoordinates;
+
+	void startIteration();
 
 public:
 	GlobalSearch() = delete;

@@ -25,5 +25,7 @@ protected:
 public:
 	FunctionBorder(const std::string& expression, long double left, long double right);
 	void replaceExpression(const std::string& newExpression, long double newLeft, long double newRight);
-	long double getValue(long double point);
+	long double getValue(long double point) const;
+	long double getLeftBorder() const;
+	long double getRightBorder() const;
 };

@@ -10,31 +10,34 @@ namespace {
 }
 
 
-GlobalSearch::GlobalSearch(const string& expression, long double left, long double right, long double accur, long double coeff) : FunctionBorder(expression, left, right), accuracy{ accur }, checkedCoordinates(::comparisonPair), maxDifference{ 0. }
+GlobalSearch::GlobalSearch(const string& expression, long double left, long double right, long double accur, long double coeff) : function(expression, left, right), accuracy{ accur }, checkedCoordinates(::comparisonPair), maxDifference{ 0. }, globalMinimum{ 0,0 }
 {
 	if (coeff <= 1.0)
 		throw 0;
 
 	rCoeff = coeff;
-
-	long double valueFuncLeftBorder = getValue(leftBorder);
-	long double valueFuncRightBorder = getValue(rightBorder);
-
-	if (valueFuncLeftBorder <= valueFuncRightBorder)
-		globalMinimum = { valueFuncLeftBorder, leftBorder };
-	else
-		globalMinimum = { valueFuncRightBorder, rightBorder };
-
-	checkedCoordinates.insert({ valueFuncLeftBorder, leftBorder });
-	checkedCoordinates.insert({ valueFuncRightBorder, rightBorder });
 }
 
+void GlobalSearch::startIteration()
+{
+	long double left = function.getLeftBorder();
+	long double right = function.getRightBorder();
+	long double valueFuncLeftBorder = function.getValue(left);
+	long double valueFuncRightBorder = function.getValue(right);
+
+	if (valueFuncLeftBorder <= valueFuncRightBorder)
+		globalMinimum = { valueFuncLeftBorder, left };
+	else
+		globalMinimum = { valueFuncRightBorder, right };
+
+	checkedCoordinates.insert({ valueFuncLeftBorder, left });
+	checkedCoordinates.insert({ valueFuncRightBorder, right });
+}
 
 void GlobalSearch::replaceAccuracy(long double newAccuracy)
 {
 	accuracy = newAccuracy;
 }
-
 
 void GlobalSearch::replaceCoeff(long double newCoeff)
 {
@@ -44,9 +47,11 @@ void GlobalSearch::replaceCoeff(long double newCoeff)
 	rCoeff = newCoeff;
 }
 
-
 std::pair<doublePair,int> GlobalSearch::searchGlobalMinimum()
 {
+	checkedCoordinates.clear();
+	startIteration();
+
 	bool stopFlag = false;
 
 	while (!stopFlag)
@@ -86,7 +91,7 @@ std::pair<doublePair,int> GlobalSearch::searchGlobalMinimum()
 		doublePair lastElemDesiredInterval = *(desiredInterval++);
 
 		long double newCoordinate = (currentElemDesiredInterval.second + lastElemDesiredInterval.second) * 0.5 - (currentElemDesiredInterval.first - lastElemDesiredInterval.first) * 0.5 / m;
-		long double newValue = getValue(newCoordinate);
+		long double newValue = function.getValue(newCoordinate);
 		checkedCoordinates.insert({ newValue,newCoordinate });
 
 		if (newValue < globalMinimum.first)

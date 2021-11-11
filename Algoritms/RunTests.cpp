@@ -1,4 +1,5 @@
 #include "GlobalSearchAlgorithm.h"
+#include "IndexAlgorithm.h"
 
 #include <iostream>
 #include <fstream>
@@ -8,7 +9,7 @@ using std::string;
 
 int main()
 {
-	int testStrategy{ 0 };
+	/*int testStrategy{0};
 
 	double leftBorder, rightBorder, accuracy, r;
 	string expression;
@@ -88,6 +89,38 @@ int main()
 			else
 				std::cout << "FILE ERROR\n";
 		}
-	}
+	}*/
+
+	//Task 6
+	std::cout << "TASK6\n";
+	std::string testExpression = "-(7/40)*(3*t+4)*sin(63/20*(t+4))";
+	std::string constraint1 = "40*(cos(4*t)*(t-sin(t))*exp(-(t*t)/2))";
+	std::string constraint2 = "2/25*(t+4)-sin(12/5*(t+4))";
+
+	IndexAlgorithm task6(testExpression, { {Function(constraint1),2.0}, {Function(constraint2), 2.0 } }, -4, 4, 0.001);
+	auto answer = task6.startIndexAlgorithm();
+
+	long double expectedPoint = 2.32396;
+	long double expectedValue = -1.6851399;
+
+	std::cout << "Point: " << answer.first.first << '\n' << "Value: " << answer.first.second << '\n' << "IterCount: " << answer.second << '\n';
+	std::cout << "ExpectedPoint: " << expectedPoint << '\n' << "ExpectedValue: " << expectedValue<<'\n';
+
+	/*
+	//Task 1
+	std::cout << "TASK1\n";
+	testExpression = "-13/6*t+sin(13/4*(2*t+5))-53/12";
+	constraint1 = "exp(-sin(3*t))-1/10*(t-1/2)*(t-1/2)-1";
+
+	IndexAlgorithm task7(testExpression, { {Function(constraint1),2.0} }, -2.5, 1.5, 0.001);
+	answer = task7.startIndexAlgorithm();
+
+	expectedPoint = 1.25832;
+	expectedValue = 4.174189;
+
+	std::cout << "Point: " << answer.first.first << '\n' << "Value: " << answer.first.second << '\n' << "IterCount: " << answer.second << '\n';
+	std::cout << "ExpectedPoint: " << expectedPoint << '\n' << "ExpectedValue: " << expectedValue;
+	*/
+
 	return 0;
 }

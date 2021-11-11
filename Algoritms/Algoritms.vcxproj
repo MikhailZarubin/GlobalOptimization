@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GlobalSearchAlgorithm.cpp" />
+    <ClCompile Include="IndexAlgorithm.cpp" />
     <ClCompile Include="RunTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlobalSearchAlgorithm.h" />
+    <ClInclude Include="IndexAlgorithm.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ComputingLibrary\ComputingLibrary.vcxproj">
