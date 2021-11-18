@@ -1,5 +1,7 @@
 #include "IndexAlgorithm.h"
 
+#include <fstream>
+
 using std::string;
 using std::pair;
 using std::vector;
@@ -25,6 +27,19 @@ IndexAlgorithm::IndexAlgorithm(const std::pair<std::string, long double>& expres
 	accuracy(accuracy_),
 	coeff(coeff_)
 {
+	//for windows form
+	std::ofstream functionsFile("inputFile.txt");
+	functionsFile.clear();
+
+	functionsFile << expressionAndValue.first << '\n' << leftBorder << '\n' << rightBorder << '\n' <<
+		constraintFunctions.size() << '\n';
+
+	for (const auto& constraint : constraintFunctions)
+		functionsFile << constraint.first.getExpression() << '\n';
+
+	functionsFile.close();
+	//end windows form
+
 	constraintFunctions.push_back({ expressionAndValue.first, expressionAndValue.second }); 
 }
 
@@ -173,6 +188,9 @@ long double IndexAlgorithm::calculateNewPoint(pair<pair<long double, pointValues
 
 pair<pair<long double, long double>, int> IndexAlgorithm::startIndexAlgorithm()
 {
+	std::ofstream pointFile("outputFile.txt");
+	pointFile.clear();
+
 	//cleaning from old values
 	if (!pointContainer.empty())
 		this->clean();
@@ -197,12 +215,17 @@ pair<pair<long double, long double>, int> IndexAlgorithm::startIndexAlgorithm()
 		//seventh step
 		newPoint = calculateNewPoint(newInterval);
 
+		//for windows form
+		pointFile << newPoint << '\n';
+
 		//checking the stop condition
 		if (newInterval.second.first - newInterval.first.first < accuracy)
 			break;
 
 		iterCount++;
 	}
+	pointFile.close();
+
 	return { {function.getValue(newPoint), newPoint}, iterCount };
 }
 

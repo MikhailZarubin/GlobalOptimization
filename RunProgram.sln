@@ -7,6 +7,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Algoritms", "Algoritms\Algo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ComputingLibrary", "ComputingLibrary\ComputingLibrary.vcxproj", "{77FD5D36-0C91-44C2-8DBE-3A66BB173D25}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUI", "GUI\CppWinForm1.vcxproj", "{9696B190-8A31-45BA-A43E-0287102EF438}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77FD5D36-0C91-44C2-8DBE-3A66BB173D25} = {77FD5D36-0C91-44C2-8DBE-3A66BB173D25}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +36,14 @@ Global
 		{77FD5D36-0C91-44C2-8DBE-3A66BB173D25}.Release|x64.Build.0 = Release|x64
 		{77FD5D36-0C91-44C2-8DBE-3A66BB173D25}.Release|x86.ActiveCfg = Release|Win32
 		{77FD5D36-0C91-44C2-8DBE-3A66BB173D25}.Release|x86.Build.0 = Release|Win32
+		{9696B190-8A31-45BA-A43E-0287102EF438}.Debug|x64.ActiveCfg = Debug|x64
+		{9696B190-8A31-45BA-A43E-0287102EF438}.Debug|x64.Build.0 = Debug|x64
+		{9696B190-8A31-45BA-A43E-0287102EF438}.Debug|x86.ActiveCfg = Debug|Win32
+		{9696B190-8A31-45BA-A43E-0287102EF438}.Debug|x86.Build.0 = Debug|Win32
+		{9696B190-8A31-45BA-A43E-0287102EF438}.Release|x64.ActiveCfg = Release|x64
+		{9696B190-8A31-45BA-A43E-0287102EF438}.Release|x64.Build.0 = Release|x64
+		{9696B190-8A31-45BA-A43E-0287102EF438}.Release|x86.ActiveCfg = Release|Win32
+		{9696B190-8A31-45BA-A43E-0287102EF438}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
