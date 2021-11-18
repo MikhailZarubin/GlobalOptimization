@@ -97,7 +97,7 @@ int main()
 	std::string constraint1 = "40*(cos(4*t)*(t-sin(t))*exp(-(t*t)/2))";
 	std::string constraint2 = "2/25*(t+4)-sin(12/5*(t+4))";
 
-	IndexAlgorithm task6(testExpression, { {Function(constraint1),2.0}, {Function(constraint2), 2.0 } }, -4, 4, 0.001);
+	IndexAlgorithm task6({ testExpression, 8.86 }, { {Function(constraint1),2.0}, {Function(constraint2), 2.0 } }, -4, 4, 0.001);
 	auto answer = task6.startIndexAlgorithm();
 
 	long double expectedPoint = 2.32396;
@@ -106,6 +106,16 @@ int main()
 	std::cout << "Point: " << answer.first.first << '\n' << "Value: " << answer.first.second << '\n' << "IterCount: " << answer.second << '\n';
 	std::cout << "ExpectedPoint: " << expectedPoint << '\n' << "ExpectedValue: " << expectedValue<<'\n';
 
+	//TestTask
+	testExpression = "t^2";
+	IndexAlgorithm testTask({ testExpression, 10 }, {}, -4, 4, 0.001);
+	answer = testTask.startIndexAlgorithm();
+
+	expectedPoint = 0;
+	expectedValue = 0;
+
+	std::cout << "Point: " << answer.first.first << '\n' << "Value: " << answer.first.second << '\n' << "IterCount: " << answer.second << '\n';
+	std::cout << "ExpectedPoint: " << expectedPoint << '\n' << "ExpectedValue: " << expectedValue << '\n';
 	/*
 	//Task 1
 	std::cout << "TASK1\n";
