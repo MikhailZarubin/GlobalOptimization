@@ -203,7 +203,7 @@ pair<pair<long double, long double>, int> IndexAlgorithm::startIndexAlgorithm()
 
 		iterCount++;
 	}
-	return { {newPoint, function.getValue(newPoint)}, iterCount };
+	return { {function.getValue(newPoint), newPoint}, iterCount };
 }
 
 void IndexAlgorithm::clean()
@@ -216,5 +216,4 @@ void IndexAlgorithm::clean()
 	indexContainer = vector <set<long double>>(constraintFunctions.size(), set<long double>());
 	lowerBorder = vector<long double>(constraintFunctions.size(), 0);
 	zContainer = vector<long double>(constraintFunctions.size(), 0);
-
 }
