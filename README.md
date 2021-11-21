@@ -1,2 +1,2 @@
-# GlobalSerachAlgorithm
-Implementation of the global search algorithm from Strongin's book
+# GlobalOptimization
+implementation of global optimization methods
