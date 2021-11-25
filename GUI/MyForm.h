@@ -35,7 +35,7 @@ namespace CppWinForm1 {
 			this->gr = CreateGraphics();
 			this->penLine = gcnew Pen(Color::Black);
 			this->penFunction = gcnew Pen(Color::LightBlue);
-			this->penConditions = gcnew Pen(Color::Green);
+			this->penConditions = gcnew Pen(Color::Yellow);
 			this->penPoint = gcnew Pen(Color::Red);
 			this->penFunction->Width = 2.0;
 			this->penConditions->Width = 2.0;
@@ -107,12 +107,18 @@ private: System::Void button1_Click_1(System::Object^ sender, System::EventArgs^
 	gr->DrawLine(penLine, 750, 350, 745, 345);
 	gr->DrawLine(penLine, 750, 350, 745, 355);
 
-	int step = 60, currentIteration = -5;
+	int step = 50;
 
-	for (int i = 150; i < 750; i += step)
+	for (int i = 450; i < 750; i += step)
 		gr->DrawLine(penLine, i, 345, i, 355);
 
-	for (int i = 600; i > 100; i -= step)
+	for (int i = 450; i > 150; i -= step)
+		gr->DrawLine(penLine, i, 345, i, 355);
+
+	for (int i = 350; i > 100; i -= step)
+		gr->DrawLine(penLine, 448, i, 452, i);
+
+	for (int i = 350; i < 600; i += step)
 		gr->DrawLine(penLine, 448, i, 452, i);
 
 	//initialize func
