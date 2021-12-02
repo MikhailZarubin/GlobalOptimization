@@ -15,9 +15,9 @@ namespace {
 }
 
 
-IndexAlgorithm::IndexAlgorithm(const std::pair<std::string, long double>& expressionAndValue, const vector<std::pair<Function, long double>>& constraints,
+IndexAlgorithm::IndexAlgorithm(const string& expressionAndValue, const vector<Function>& constraints,
 	long double leftBorder, long double rightBorder, long double accuracy_, long double coeff_) :
-	function(expressionAndValue.first, leftBorder, rightBorder),
+	function(expressionAndValue, leftBorder, rightBorder),
 	constraintFunctions(constraints),
 	pointContainer(::comparsion),
 	valueContainer(constraintFunctions.size() + 1, set<long double>()),
@@ -31,16 +31,16 @@ IndexAlgorithm::IndexAlgorithm(const std::pair<std::string, long double>& expres
 	std::ofstream functionsFile("inputFile.txt");
 	functionsFile.clear();
 
-	functionsFile << expressionAndValue.first << '\n' << leftBorder << '\n' << rightBorder << '\n' <<
+	functionsFile << expressionAndValue << '\n' << leftBorder << '\n' << rightBorder << '\n' <<
 		constraintFunctions.size() << '\n';
 
 	for (const auto& constraint : constraintFunctions)
-		functionsFile << constraint.first.getExpression() << '\n';
+		functionsFile << constraint.getExpression() << '\n';
 
 	functionsFile.close();
 	//end windows form
 
-	constraintFunctions.push_back({ expressionAndValue.first, expressionAndValue.second }); 
+	constraintFunctions.push_back(expressionAndValue);
 }
 
 pair<pair<long double, pointValues>, pair<long double, pointValues>> IndexAlgorithm::startIteration()
@@ -64,17 +64,17 @@ pair<long double, vector<Function>::size_type> IndexAlgorithm::getTaskResult(lon
 	for (vector<Function>::size_type i = 0; i < constraintFunctions.size() - 1; i++)
 	{
 		std::pair<std::set<long double>::iterator, bool> iterator = indexContainer[i].insert(point);
-		valueContainer[i].insert(constraintFunctions[i].first.getValue(point));
+		valueContainer[i].insert(constraintFunctions[i].getValue(point));
 
 		if (iterator.second)
 			updateLowerBorder(i, iterator.first);
 
-		if (auto value = constraintFunctions[i].first.getValue(point) > 0)
+		if (auto value = constraintFunctions[i].getValue(point) > 0)
 			return { value, i };
 	}
 
 	std::pair<std::set<long double>::iterator, bool> iterator = indexContainer[indexContainer.size() - 1].insert(point);
-	valueContainer[indexContainer.size() - 1].insert(constraintFunctions[indexContainer.size() - 1].first.getValue(point));
+	valueContainer[indexContainer.size() - 1].insert(constraintFunctions[indexContainer.size() - 1].getValue(point));
 
 	if (iterator.second)
 		updateLowerBorder(indexContainer.size() - 1, iterator.first);
@@ -91,22 +91,22 @@ void IndexAlgorithm::updateLowerBorder(vector<Function>::size_type index, std::s
 	}
 
 	long double newPoint = *iterNewElem;
-	long double newValue = constraintFunctions[index].first.getValue(newPoint);
+	long double newValue = constraintFunctions[index].getValue(newPoint);
 
 	for (auto iter = ++iterNewElem; iter != indexContainer[index].end(); ++iter)
 	{
 		long double point = *iter;
-		long double value = constraintFunctions[index].first.getValue(point);
+		long double value = constraintFunctions[index].getValue(point);
 
-		lowerBorder[index] = std::max(lowerBorder[index], (value - newValue) / (point - newPoint));
+		lowerBorder[index] = std::max(lowerBorder[index], fabs(value - newValue) / (point - newPoint));
 	}
 
 	for (auto iter = indexContainer[index].begin(); iter != iterNewElem; ++iter)
 	{
 		long double point = *iter;
-		long double value = constraintFunctions[index].first.getValue(point);
+		long double value = constraintFunctions[index].getValue(point);
 
-		lowerBorder[index] = std::max(lowerBorder[index], (newValue - value) / (newPoint - point));
+		lowerBorder[index] = std::max(lowerBorder[index], fabs(newValue - value) / (newPoint - point));
 	}
 
 	lowerBorder[index] = lowerBorder[index] == 0 ? 1 : lowerBorder[index];
@@ -119,7 +119,7 @@ void IndexAlgorithm::updateValuesZ(vector<Function>::size_type index)
 		zContainer[i] = *valueContainer[i].begin();
 
 		if (zContainer[i] <= 0)
-			zContainer[i] = -lowerBorder[i] * coeff;
+			zContainer[i] = -lowerBorder[i] * 0.001;
 	}
 }
 
@@ -142,22 +142,21 @@ pair<pair<long double, pointValues>, pair<long double, pointValues>> IndexAlgori
 		{
 			currentValue = delta + (currentPoint.second.first -
 				lastPoint.second.first) * (currentPoint.second.first - lastPoint.second.first) /
-				(3 * 3 *
-					lowerBorder[indexV] * lowerBorder[indexV] * delta) -
+				(coeff * coeff * lowerBorder[indexV] * lowerBorder[indexV] * delta) -
 				2 * (currentPoint.second.first + lastPoint.second.first -
 					2 * zContainer[indexV]) /
-				(2 * lowerBorder[indexV]);
+				(coeff * lowerBorder[indexV]);
 		}
 		else if (indexV > lastPoint.second.second)
 		{
 			currentValue = 2 * delta - 4 * (currentPoint.second.first - zContainer[indexV]) /
-				(2 * lowerBorder[indexV]);
+				(coeff * lowerBorder[indexV]);
 		}
 		else
 		{
 			indexV = lastPoint.second.second;
 			currentValue = 2 * delta - 4 * (lastPoint.second.first - zContainer[indexV]) /
-				(2 * lowerBorder[indexV]);
+				(coeff * lowerBorder[indexV]);
 		}
 
 		if (lastIt == pointContainer.begin() || maxValue < currentValue)
@@ -182,7 +181,7 @@ long double IndexAlgorithm::calculateNewPoint(pair<pair<long double, pointValues
 		auto indexV = newInterval.first.second.second;
 		return (newInterval.first.first + newInterval.second.first) / 2 -
 			(newInterval.second.second.first - newInterval.first.second.first) /
-			(2 * 2 * lowerBorder[indexV]);
+			(2 * coeff * lowerBorder[indexV]);
 	}
 }
 
@@ -195,8 +194,8 @@ pair<pair<long double, long double>, int> IndexAlgorithm::startIndexAlgorithm()
 	if (!pointContainer.empty())
 		this->clean();
 
-	pointFile << function.getLeftBorder();
-	pointFile << function.getRightBorder();
+	pointFile << function.getLeftBorder() << '\n';
+	pointFile << function.getRightBorder() << '\n';
 
 	//calculation of a new interval by starting iteration
 	auto newInterval = startIteration();

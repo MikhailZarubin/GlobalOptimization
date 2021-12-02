@@ -14,7 +14,7 @@ class IndexAlgorithm
 	//original function
 	FunctionBorder function;
 	//constraint functions and coeff
-	std::vector<std::pair<Function, long double>> constraintFunctions;
+	std::vector<Function> constraintFunctions;
 	//a lot of proven points (for the first step of the algorithm)
 	std::set<std::pair<long double, pointValues>, bool(*) (const std::pair<long double, pointValues>&, const std::pair<long double, pointValues>&)> pointContainer;
 	//the set of indices of points in which the condition was calculated under the corresponding number (Iv, for the second step of the algorithm)
@@ -46,8 +46,8 @@ class IndexAlgorithm
 	void clean();
 
 public:
-	IndexAlgorithm(const std::pair<std::string, long double>& expressionAndValue, const std::vector<std::pair<Function, long double>>& constraintsAndCoeff,
-		long double leftBorder, long double rightBorder, long double accuracy_, long double coeff_ = 0.001);
+	IndexAlgorithm(const std::string& expressionAndValue, const std::vector<Function>& constraintsAndCoeff,
+		long double leftBorder, long double rightBorder, long double accuracy_, long double coeff_ = 2);
 	std::pair<std::pair<long double, long double>, int> startIndexAlgorithm();
 };
 

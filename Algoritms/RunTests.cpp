@@ -52,14 +52,14 @@ void initTestFuncGSA(const char fileName[], double accuracy, double rCoeff)
 		throw false;
 }
 
-void initTestFuncIA(const char fileName[], double accuracy)
+void initTestFuncIA(const char fileName[], double accuracy, double coeff)
 {
 	std::ifstream file(fileName);
 
 	string expression;
 	int countConditions;
-	vector<pair<Function, long double>> conditionsContainer;
-	long double coeffForFunctions, leftBorder, rightBorder, expectedResult, expectedCoordinate;
+	vector<Function> conditionsContainer;
+	long double leftBorder, rightBorder, expectedResult, expectedCoordinate;
 
 	if (file)
 	{
@@ -67,9 +67,6 @@ void initTestFuncIA(const char fileName[], double accuracy)
 		{
 			file.getline(buffer, bufferSize, '\n');
 			expression = buffer;
-
-			file.getline(buffer, bufferSize, '\n');
-			coeffForFunctions = atof(buffer);
 
 			file.getline(buffer, bufferSize, '\n');
 			leftBorder = atof(buffer);
@@ -85,10 +82,7 @@ void initTestFuncIA(const char fileName[], double accuracy)
 				file.getline(buffer, bufferSize, '\n');
 				string conditionsNumberI = buffer;
 
-				file.getline(buffer, bufferSize, '\n');
-				long double coeffNumberI = atof(buffer);
-
-				conditionsContainer.push_back({ Function(conditionsNumberI), coeffNumberI });
+				conditionsContainer.push_back(Function(conditionsNumberI));
 			}
 
 			file.getline(buffer, bufferSize, '\n');
@@ -97,7 +91,7 @@ void initTestFuncIA(const char fileName[], double accuracy)
 			file.getline(buffer, bufferSize, '\n');
 			expectedCoordinate = atof(buffer);
 
-			IndexAlgorithm testFunc({ expression, coeffForFunctions }, conditionsContainer, leftBorder, rightBorder, accuracy);
+			IndexAlgorithm testFunc(expression, conditionsContainer, leftBorder, rightBorder, accuracy, coeff);
 			auto res = testFunc.startIndexAlgorithm();
 
 			std::cout << "\nFUNC: " << expression << "\nLEFT_BORDER: " << leftBorder << "\nRIGHT_BORDER: " << rightBorder << "\nACCURACY: " << accuracy
@@ -186,7 +180,7 @@ int main()
 				std::cout << "FUNC(t): ";
 				std::cin >> expression;
 
-				std::cout << "FUNC COEFF: ";
+				std::cout << "R_COEFF: ";
 				std::cin >> coeffForFunctions;
 
 				std::cout << "LEFT_BORDER: ";
@@ -198,25 +192,21 @@ int main()
 				std::cout << "COUNT CONDITIONS:";
 				std::cin >> countConditions;
 
-				vector<pair<Function, long double>> conditionsContainer;
+				vector<Function> conditionsContainer;
 				for (vector<FunctionBorder>::size_type i = 0; i < countConditions; i++)
 				{
 					string conditionsNumberI;
-					long double coeffNumberI;
 
 					std::cout << "CONDITION " << i << ":";
 					std::cin >> conditionsNumberI;
 
-					std::cout << "COEFF " << i << ":";
-					std::cin >> coeffNumberI;
-
-					conditionsContainer.push_back({ Function(conditionsNumberI), coeffNumberI });
+					conditionsContainer.push_back(Function(conditionsNumberI));
 				}
 
 				std::cout << "ACCURACY: ";
 				std::cin >> accuracy;
 
-				IndexAlgorithm testFunc({ expression, coeffForFunctions }, conditionsContainer, leftBorder, rightBorder, accuracy);
+				IndexAlgorithm testFunc(expression, conditionsContainer, leftBorder, rightBorder, accuracy, coeffForFunctions);
 				auto res = testFunc.startIndexAlgorithm();
 
 				std::cout << "MIN VALUE: " << res.first.first << '\n' << "COORDINATE: " << res.first.second << '\n' << "ITER_COUNT: " << res.second << '\n';
@@ -226,10 +216,15 @@ int main()
 			{
 				try
 				{
+					double coeff;
+
+					std::cout << "R_COEFF: ";
+					std::cin >> coeff;
+
 					std::cout << "ACCURACY: ";
 					std::cin >> accuracy;
 
-					initTestFuncIA("../TestingFunctions/indexAlgorithm.txt", accuracy);
+					initTestFuncIA("../TestingFunctions/indexAlgorithm.txt", accuracy, coeff);
 				}
 				catch (bool)
 				{
