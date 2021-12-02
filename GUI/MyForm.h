@@ -107,7 +107,7 @@ private: System::Void button1_Click_1(System::Object^ sender, System::EventArgs^
 	gr->DrawLine(penLine, 750, 350, 745, 345);
 	gr->DrawLine(penLine, 750, 350, 745, 355);
 
-	int step = 50;
+	int step = 30;
 
 	for (int i = 450; i < 750; i += step)
 		gr->DrawLine(penLine, i, 345, i, 355);

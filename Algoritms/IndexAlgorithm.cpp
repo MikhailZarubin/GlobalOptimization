@@ -142,22 +142,22 @@ pair<pair<long double, pointValues>, pair<long double, pointValues>> IndexAlgori
 		{
 			currentValue = delta + (currentPoint.second.first -
 				lastPoint.second.first) * (currentPoint.second.first - lastPoint.second.first) /
-				(constraintFunctions[indexV].second * constraintFunctions[indexV].second *
+				(3 * 3 *
 					lowerBorder[indexV] * lowerBorder[indexV] * delta) -
 				2 * (currentPoint.second.first + lastPoint.second.first -
 					2 * zContainer[indexV]) /
-				(constraintFunctions[indexV].second * lowerBorder[indexV]);
+				(2 * lowerBorder[indexV]);
 		}
 		else if (indexV > lastPoint.second.second)
 		{
 			currentValue = 2 * delta - 4 * (currentPoint.second.first - zContainer[indexV]) /
-				(constraintFunctions[indexV].second * lowerBorder[indexV]);
+				(2 * lowerBorder[indexV]);
 		}
 		else
 		{
 			indexV = lastPoint.second.second;
 			currentValue = 2 * delta - 4 * (lastPoint.second.first - zContainer[indexV]) /
-				(constraintFunctions[indexV].second * lowerBorder[indexV]);
+				(2 * lowerBorder[indexV]);
 		}
 
 		if (lastIt == pointContainer.begin() || maxValue < currentValue)
@@ -182,7 +182,7 @@ long double IndexAlgorithm::calculateNewPoint(pair<pair<long double, pointValues
 		auto indexV = newInterval.first.second.second;
 		return (newInterval.first.first + newInterval.second.first) / 2 -
 			(newInterval.second.second.first - newInterval.first.second.first) /
-			(2 * constraintFunctions[indexV].second * lowerBorder[indexV]);
+			(2 * 2 * lowerBorder[indexV]);
 	}
 }
 
@@ -194,6 +194,9 @@ pair<pair<long double, long double>, int> IndexAlgorithm::startIndexAlgorithm()
 	//cleaning from old values
 	if (!pointContainer.empty())
 		this->clean();
+
+	pointFile << function.getLeftBorder();
+	pointFile << function.getRightBorder();
 
 	//calculation of a new interval by starting iteration
 	auto newInterval = startIteration();
