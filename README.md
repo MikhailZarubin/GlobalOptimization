@@ -1,2 +1,2 @@
-# GlobalOptimization
-implementation of global optimization methods
+#GlobalOptimization
+Implementation of global optimization methods

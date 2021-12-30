@@ -63,14 +63,16 @@ pair<long double, vector<Function>::size_type> IndexAlgorithm::getTaskResult(lon
 {
 	for (vector<Function>::size_type i = 0; i < constraintFunctions.size() - 1; i++)
 	{
-		std::pair<std::set<long double>::iterator, bool> iterator = indexContainer[i].insert(point);
-		valueContainer[i].insert(constraintFunctions[i].getValue(point));
-
-		if (iterator.second)
-			updateLowerBorder(i, iterator.first);
-
 		if (auto value = constraintFunctions[i].getValue(point) > 0)
+		{
+			std::pair<std::set<long double>::iterator, bool> iterator = indexContainer[i].insert(point);
+			valueContainer[i].insert(constraintFunctions[i].getValue(point));
+
+			if (iterator.second)
+				updateLowerBorder(i, iterator.first);
+
 			return { value, i };
+		}
 	}
 
 	std::pair<std::set<long double>::iterator, bool> iterator = indexContainer[indexContainer.size() - 1].insert(point);
@@ -109,7 +111,7 @@ void IndexAlgorithm::updateLowerBorder(vector<Function>::size_type index, std::s
 		lowerBorder[index] = std::max(lowerBorder[index], fabs(newValue - value) / (newPoint - point));
 	}
 
-	lowerBorder[index] = lowerBorder[index] == 0 ? 1 : lowerBorder[index];
+	lowerBorder[index] = fabs(lowerBorder[index]) < 0.001 ? 1 : lowerBorder[index];
 }
 
 void IndexAlgorithm::updateValuesZ(vector<Function>::size_type index)
