@@ -28,6 +28,7 @@ class IndexAlgorithm
 
 	long double accuracy;
 	long double coeff;
+	std::vector<double> points;
 
 	//the first iteration with boundary points
 	std::pair<std::pair<long double, pointValues>, std::pair<long double, pointValues>> startIteration();
@@ -49,5 +50,6 @@ public:
 	IndexAlgorithm(const std::string& expressionAndValue, const std::vector<Function>& constraintsAndCoeff,
 		long double leftBorder, long double rightBorder, long double accuracy_, long double coeff_ = 2);
 	std::pair<std::pair<long double, long double>, int> startIndexAlgorithm();
+	std::vector<double> getPoints() const;
 };
 

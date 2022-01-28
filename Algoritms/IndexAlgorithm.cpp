@@ -27,19 +27,6 @@ IndexAlgorithm::IndexAlgorithm(const string& expressionAndValue, const vector<Fu
 	accuracy(accuracy_),
 	coeff(coeff_)
 {
-	//for windows form
-	std::ofstream functionsFile("inputFile.txt");
-	functionsFile.clear();
-
-	functionsFile << expressionAndValue << '\n' << leftBorder << '\n' << rightBorder << '\n' <<
-		constraintFunctions.size() << '\n';
-
-	for (const auto& constraint : constraintFunctions)
-		functionsFile << constraint.getExpression() << '\n';
-
-	functionsFile.close();
-	//end windows form
-
 	constraintFunctions.push_back(expressionAndValue);
 }
 
@@ -189,15 +176,14 @@ long double IndexAlgorithm::calculateNewPoint(pair<pair<long double, pointValues
 
 pair<pair<long double, long double>, int> IndexAlgorithm::startIndexAlgorithm()
 {
-	std::ofstream pointFile("outputFile.txt");
-	pointFile.clear();
+	points.clear();
 
 	//cleaning from old values
 	if (!pointContainer.empty())
 		this->clean();
 
-	pointFile << function.getLeftBorder() << '\n';
-	pointFile << function.getRightBorder() << '\n';
+	points.push_back(function.getLeftBorder());
+	points.push_back(function.getRightBorder());
 
 	//calculation of a new interval by starting iteration
 	auto newInterval = startIteration();
@@ -220,7 +206,7 @@ pair<pair<long double, long double>, int> IndexAlgorithm::startIndexAlgorithm()
 		newPoint = calculateNewPoint(newInterval);
 
 		//for windows form
-		pointFile << newPoint << '\n';
+		points.push_back(newPoint);
 
 		//checking the stop condition
 		if (newInterval.second.first - newInterval.first.first < accuracy)
@@ -228,7 +214,6 @@ pair<pair<long double, long double>, int> IndexAlgorithm::startIndexAlgorithm()
 
 		iterCount++;
 	}
-	pointFile.close();
 
 	return { {function.getValue(newPoint), newPoint}, iterCount };
 }
@@ -243,4 +228,9 @@ void IndexAlgorithm::clean()
 	indexContainer = vector <set<long double>>(constraintFunctions.size(), set<long double>());
 	lowerBorder = vector<long double>(constraintFunctions.size(), 0);
 	zContainer = vector<long double>(constraintFunctions.size(), 0);
+}
+
+std::vector<double> IndexAlgorithm::getPoints() const
+{
+	return points;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../ComputingLibrary/Function.h"
+#include <vector>
 #include <set>
 
 using doublePair = std::pair<long double, long double>;
@@ -12,6 +13,7 @@ class GlobalSearch
 	long double accuracy, rCoeff, maxDifference;
 	doublePair globalMinimum;
 	std::set<doublePair, bool(*) (const doublePair&, const doublePair&)> checkedCoordinates;
+	std::vector<double> points;
 
 	void startIteration();
 
@@ -21,5 +23,6 @@ public:
 	void replaceAccuracy(long double newAccuracy);
 	void replaceCoeff(long double newCoeff);
 	std::pair<std::pair<long double, long double>, int> searchGlobalMinimum();
+	std::vector<double> getPoints() const;
 };
 

@@ -140,8 +140,27 @@ int main()
 				std::cout << "R_COEFF: ";
 				std::cin >> r;
 
+				// for GUI
+				std::ofstream functionsFile("inputFile.txt");
+				functionsFile.clear();
+
+				functionsFile << expression << '\n' << leftBorder << '\n' << rightBorder << '\n' << 0 << '\n';
+				functionsFile.close();
+				// end GUI
+
 				GlobalSearch testFunc(expression, leftBorder, rightBorder, accuracy, r);
 				std::pair<doublePair, int> res = testFunc.searchGlobalMinimum();
+
+				// for GUI
+				std::ofstream pointFile("outputFile.txt");
+				pointFile.clear();
+
+				auto points = testFunc.getPoints();
+				for (const auto& point : points)
+					pointFile << point << '\n';
+
+				pointFile.close();
+				// end GUI
 
 				std::cout << "MIN VALUE: " << res.first.first << '\n' << "COORDINATE: " << res.first.second << '\n' << "ITER_COUNT: " << res.second << '\n';
 			}
@@ -191,6 +210,13 @@ int main()
 				vector<FunctionBorder>::size_type countConditions;
 				std::cout << "COUNT CONDITIONS:";
 				std::cin >> countConditions;
+				
+				// for GUI
+				std::ofstream functionsFile("inputFile.txt");
+				functionsFile.clear();
+
+				functionsFile << expression << '\n' << leftBorder << '\n' << rightBorder << '\n' << countConditions << '\n';
+				// end GUI
 
 				vector<Function> conditionsContainer;
 				for (vector<FunctionBorder>::size_type i = 0; i < countConditions; i++)
@@ -200,14 +226,33 @@ int main()
 					std::cout << "CONDITION " << i << ":";
 					std::cin >> conditionsNumberI;
 
+					// for GUI
+					functionsFile << conditionsNumberI << '\n';
+					//end GUI
+
 					conditionsContainer.push_back(Function(conditionsNumberI));
 				}
+
+				// for GUI
+				functionsFile.close();
+				// end GUI
 
 				std::cout << "ACCURACY: ";
 				std::cin >> accuracy;
 
 				IndexAlgorithm testFunc(expression, conditionsContainer, leftBorder, rightBorder, accuracy, coeffForFunctions);
 				auto res = testFunc.startIndexAlgorithm();
+
+				// for GUI
+				std::ofstream pointFile("outputFile.txt");
+				pointFile.clear();
+
+				auto points = testFunc.getPoints();
+				for (const auto& point : points)
+					pointFile << point << '\n';
+
+				pointFile.close();
+				// end GUI
 
 				std::cout << "MIN VALUE: " << res.first.first << '\n' << "COORDINATE: " << res.first.second << '\n' << "ITER_COUNT: " << res.second << '\n';
 			}
@@ -236,48 +281,6 @@ int main()
 				break;
 		}
 	}
-
-/*	//Task 6
-	std::cout << "TASK6\n";
-	std::string testExpression = "-(7/40)*(3*t+4)*sin(63/20*(t+4))";
-	std::string constraint1 = "40*(cos(4*t)*(t-sin(t))*exp(-(t*t)/2))";
-	std::string constraint2 = "2/25*(t+4)-sin(12/5*(t+4))";
-
-	IndexAlgorithm task6({ testExpression, 8.86 }, { {Function(constraint1),2.0}, {Function(constraint2), 2.0 } }, -4, 4, 0.001);
-	auto answer = task6.startIndexAlgorithm();
-
-	long double expectedPoint = 2.32396;
-	long double expectedValue = -1.6851399;
-
-	std::cout << "Point: " << answer.first.first << '\n' << "Value: " << answer.first.second << '\n' << "IterCount: " << answer.second << '\n';
-	std::cout << "ExpectedPoint: " << expectedPoint << '\n' << "ExpectedValue: " << expectedValue<<'\n';
-
-	//TestTask
-	std::cout << "\nTASK x^2\n";
-	testExpression = "t^2";
-	IndexAlgorithm testTask({ testExpression, 10 }, {}, -4, 4, 0.001);
-	answer = testTask.startIndexAlgorithm();
-
-	expectedPoint = 0;
-	expectedValue = 0;
-
-	std::cout << "Point: " << answer.first.first << '\n' << "Value: " << answer.first.second << '\n' << "IterCount: " << answer.second << '\n';
-	std::cout << "ExpectedPoint: " << expectedPoint << '\n' << "ExpectedValue: " << expectedValue << '\n';
-	/*
-	//Task 1
-	std::cout << "TASK1\n";
-	testExpression = "-13/6*t+sin(13/4*(2*t+5))-53/12";
-	constraint1 = "exp(-sin(3*t))-1/10*(t-1/2)*(t-1/2)-1";
-
-	IndexAlgorithm task7(testExpression, { {Function(constraint1),2.0} }, -2.5, 1.5, 0.001);
-	answer = task7.startIndexAlgorithm();
-
-	expectedPoint = 1.25832;
-	expectedValue = 4.174189;
-
-	std::cout << "Point: " << answer.first.first << '\n' << "Value: " << answer.first.second << '\n' << "IterCount: " << answer.second << '\n';
-	std::cout << "ExpectedPoint: " << expectedPoint << '\n' << "ExpectedValue: " << expectedValue;
-	*/
 
 	return 0;
 }

@@ -32,6 +32,9 @@ void GlobalSearch::startIteration()
 
 	checkedCoordinates.insert({ valueFuncLeftBorder, left });
 	checkedCoordinates.insert({ valueFuncRightBorder, right });
+
+	points.push_back(left);
+	points.push_back(right);
 }
 
 void GlobalSearch::replaceAccuracy(long double newAccuracy)
@@ -92,7 +95,9 @@ std::pair<doublePair,int> GlobalSearch::searchGlobalMinimum()
 
 		long double newCoordinate = (currentElemDesiredInterval.second + lastElemDesiredInterval.second) * 0.5 - (currentElemDesiredInterval.first - lastElemDesiredInterval.first) * 0.5 / m;
 		long double newValue = function.getValue(newCoordinate);
-		checkedCoordinates.insert({ newValue,newCoordinate });
+		checkedCoordinates.insert({ newValue, newCoordinate });
+
+		points.push_back(newCoordinate);
 
 		if (newValue < globalMinimum.first)
 			globalMinimum = { newValue, newCoordinate };
@@ -101,4 +106,9 @@ std::pair<doublePair,int> GlobalSearch::searchGlobalMinimum()
 	}
 
 	return { globalMinimum, checkedCoordinates.size() };
+}
+
+std::vector<double> GlobalSearch::getPoints() const
+{
+	return points;
 }
