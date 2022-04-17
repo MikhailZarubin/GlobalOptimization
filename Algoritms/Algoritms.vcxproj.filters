@@ -24,12 +24,18 @@
     <ClCompile Include="IndexAlgorithm.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="IndexAlgorithmMultidimessional.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlobalSearchAlgorithm.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="IndexAlgorithm.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexAlgorithmMultidimessional.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

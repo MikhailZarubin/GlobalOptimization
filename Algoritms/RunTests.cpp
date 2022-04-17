@@ -1,5 +1,6 @@
 #include "GlobalSearchAlgorithm.h"
 #include "IndexAlgorithm.h"
+#include "IndexAlgorithmMultidimessional.h"
 
 #include <iostream>
 #include <fstream>
@@ -194,67 +195,98 @@ int main()
 
 			if (testStrategy == 1)
 			{
-				long double coeffForFunctions;
+				int dimension;
+				std::cout << "\nDimension = ";
+				std::cin >> dimension;
 
-				std::cout << "FUNC(t): ";
-				std::cin >> expression;
-
-				std::cout << "R_COEFF: ";
-				std::cin >> coeffForFunctions;
-
-				std::cout << "LEFT_BORDER: ";
-				std::cin >> leftBorder;
-				std::cout << "RIGHT_BORDER: ";
-				std::cin >> rightBorder;
-
-				vector<FunctionBorder>::size_type countConditions;
-				std::cout << "COUNT CONDITIONS:";
-				std::cin >> countConditions;
-				
-				// for GUI
-				std::ofstream functionsFile("inputFile.txt");
-				functionsFile.clear();
-
-				functionsFile << expression << '\n' << leftBorder << '\n' << rightBorder << '\n' << countConditions << '\n';
-				// end GUI
-
-				vector<Function> conditionsContainer;
-				for (vector<FunctionBorder>::size_type i = 0; i < countConditions; i++)
+				if (dimension == 1)
 				{
-					string conditionsNumberI;
+					long double coeffForFunctions;
 
-					std::cout << "CONDITION " << i << ":";
-					std::cin >> conditionsNumberI;
+					std::cout << "FUNC(t): ";
+					std::cin >> expression;
+
+					std::cout << "R_COEFF: ";
+					std::cin >> coeffForFunctions;
+
+					std::cout << "LEFT_BORDER: ";
+					std::cin >> leftBorder;
+					std::cout << "RIGHT_BORDER: ";
+					std::cin >> rightBorder;
+
+					vector<FunctionBorder>::size_type countConditions;
+					std::cout << "COUNT CONDITIONS:";
+					std::cin >> countConditions;
 
 					// for GUI
-					functionsFile << conditionsNumberI << '\n';
-					//end GUI
+					std::ofstream functionsFile("inputFile.txt");
+					functionsFile.clear();
 
-					conditionsContainer.push_back(Function(conditionsNumberI));
+					functionsFile << expression << '\n' << leftBorder << '\n' << rightBorder << '\n' << countConditions << '\n';
+					// end GUI
+
+					vector<Function> conditionsContainer;
+					for (vector<FunctionBorder>::size_type i = 0; i < countConditions; i++)
+					{
+						string conditionsNumberI;
+
+						std::cout << "CONDITION " << i << ":";
+						std::cin >> conditionsNumberI;
+
+						// for GUI
+						functionsFile << conditionsNumberI << '\n';
+						//end GUI
+
+						conditionsContainer.push_back(Function(conditionsNumberI));
+					}
+
+					// for GUI
+					functionsFile.close();
+					// end GUI
+
+					std::cout << "ACCURACY: ";
+					std::cin >> accuracy;
+
+					IndexAlgorithm testFunc(expression, conditionsContainer, leftBorder, rightBorder, accuracy, coeffForFunctions);
+					auto res = testFunc.startIndexAlgorithm();
+
+					// for GUI
+					std::ofstream pointFile("outputFile.txt");
+					pointFile.clear();
+
+					auto points = testFunc.getPoints();
+					for (const auto& point : points)
+						pointFile << point << '\n';
+
+					pointFile.close();
+					// end GUI
+
+					std::cout << "MIN VALUE: " << res.first.first << '\n' << "COORDINATE: " << res.first.second << '\n' << "ITER_COUNT: " << res.second << '\n';
 				}
+				//NEW
+				else
+				{
+					Function func("- 1.5 * x * x * exp(1 - x * x - 20.25 * (x - y) * (x - y)) - ((0.5 * (x - 1) * (y - 1)) ^ 4) * exp(2 - ((0.5 * (x - 1)) ^ 4) - ((y - 1) ^ 4))", 2, "xy");
+					
+					std::vector<Function> constraints;
+					constraints.push_back(Function("0.01 * ( ((x - 2.2) ^ 2) + ((y - 1.2) ^ 2) - 2.25)", 2, "xy"));
+					constraints.push_back(Function("100 * ( 1 - ( (x - 1) ^ 2) / 1.44 - ((0.5 * y) ^ 2) )", 2, "xy"));
+					constraints.push_back(Function("10 * (y - 1.5 - 1.5 * sin(6.283 * (x - 1.75)) )", 2, "xy"));
 
-				// for GUI
-				functionsFile.close();
-				// end GUI
+					std::vector<domain> borders(2);
+					borders.push_back(domain(0, 4));
+					borders.push_back(domain(-1, 3));
 
-				std::cout << "ACCURACY: ";
-				std::cin >> accuracy;
+					IndexAlgorithmMultidimessional test(Function("x^2 + y^2", 2, "xy"), {}, {domain(-1, 0.5), domain(-0.5, 1)});
+					//IndexAlgorithmMultidimessional test(func, constraints, borders);
 
-				IndexAlgorithm testFunc(expression, conditionsContainer, leftBorder, rightBorder, accuracy, coeffForFunctions);
-				auto res = testFunc.startIndexAlgorithm();
+					auto res = test.run();
+					std::cout << "MIN POINT" << "\nX = " << res.arguments[0] << "\nY = " << res.arguments[1] << '\n';
+					std::cout << "MIN VALUE: " << res.value << '\n';
+					std::cout << "IterCount = " << test.getIterCount() << '\n';
 
-				// for GUI
-				std::ofstream pointFile("outputFile.txt");
-				pointFile.clear();
-
-				auto points = testFunc.getPoints();
-				for (const auto& point : points)
-					pointFile << point << '\n';
-
-				pointFile.close();
-				// end GUI
-
-				std::cout << "MIN VALUE: " << res.first.first << '\n' << "COORDINATE: " << res.first.second << '\n' << "ITER_COUNT: " << res.second << '\n';
+				}
+				//END NEW
 			}
 
 			else if (testStrategy == 2)
