@@ -277,7 +277,14 @@ int main()
 					borders.push_back(domain(0, 4));
 					borders.push_back(domain(-1, 3));
 
-					IndexAlgorithmMultidimessional test(Function("x^2 + y^2", 2, "xy"), {}, {domain(-1, 0.5), domain(-0.5, 1)});
+					//IndexAlgorithmMultidimessional test(Function("x^2 + y^2", 2, "xy"), {}, {domain(-2, 2), domain(-2, 2)});
+					/*IndexAlgorithmMultidimessional test(Function("x^2 + y^2", 2, "xy"),
+						{ Function("x + y + 0.5", 2, "xy"),
+						  Function("-x - y + 0.5", 2, "xy") },
+						{ domain(-2, 2), domain(-2, 2) });*/
+					IndexAlgorithmMultidimessional test(Function("x^2 + y^2", 2, "xy"),
+						{ Function("x + y + 0.5", 2, "xy") },
+						{ domain(-2, 2), domain(-2, 2) });
 					//IndexAlgorithmMultidimessional test(func, constraints, borders);
 
 					auto res = test.run();

@@ -33,6 +33,16 @@ struct domain {
 	domain& operator = (const domain& obj) { leftBorder = obj.leftBorder; rightBorder = obj.rightBorder; return *this; };
 };
 
+struct updatedV {
+	std::vector<Function>::size_type v;
+	std::set<long double>::iterator iterator;
+
+	updatedV(std::vector<Function>::size_type _v, std::set<long double>::iterator _iterator) :
+		v(_v),
+		iterator(_iterator)
+	{};
+};
+
 class IndexAlgorithmMultidimessional {
 	Function function;
 	std::vector<domain> borders;
@@ -51,14 +61,14 @@ class IndexAlgorithmMultidimessional {
 
 	long double startIteration();
 	std::vector<long double> parseArg(long double peanoX);
-	std::vector<Function>::size_type calculateTaskResult(long double peanoX);
-	void calculateLowerBounds(std::vector<Function>::size_type updatedV);
+	updatedV calculateTaskResult(long double peanoX);
+	void calculateLowerBounds(updatedV newV);
 	std::vector<long double> calculateMarks();
 	long double calculateNewPoint(const std::vector<long double>& marks);
 
 public:
 	IndexAlgorithmMultidimessional(const Function& func, const std::vector<Function>& constraintFunc, 
-		const std::vector<domain>& borders, long double accur = 0.001, long double rCoeff = 2);
+		const std::vector<domain>& borders, long double accur = 0.001, long double rCoeff = 3);
 	optimalPoint run();
 	int getIterCount() const { return iterCount; }
 };

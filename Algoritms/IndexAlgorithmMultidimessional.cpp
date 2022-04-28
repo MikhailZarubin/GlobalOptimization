@@ -29,7 +29,7 @@ IndexAlgorithmMultidimessional::IndexAlgorithmMultidimessional(const Function& f
 	const std::vector<domain>& _borders, long double _accuracy, long double _rCoeff) :
 	function(func),
 	constraintFunctions(constraintFunc),
-	lowerBounds(constraintFunctions.size() + 1, -1),
+	lowerBounds(constraintFunc.size() + 1, -1),
 	borders(_borders),
 	accuracy(_accuracy),
     rCoeff (_rCoeff),
@@ -55,11 +55,14 @@ std::vector<long double> IndexAlgorithmMultidimessional::parseArg(long double pe
 }
 
 long double IndexAlgorithmMultidimessional::startIteration() {
-	peanoPoints.insert(0);
-	peanoPoints.insert(1);
+	long double firstStartPoint = 0.4;
+	long double secondStartPoint = 0.6;
 
-	auto updatedV0 = calculateTaskResult(0);
-	auto updatedV1 = calculateTaskResult(1);
+	peanoPoints.insert(firstStartPoint);
+	peanoPoints.insert(secondStartPoint);
+
+	auto updatedV0 = calculateTaskResult(firstStartPoint);
+	auto updatedV1 = calculateTaskResult(secondStartPoint);
 
 	calculateLowerBounds(updatedV0);
 	calculateLowerBounds(updatedV1);
@@ -68,34 +71,45 @@ long double IndexAlgorithmMultidimessional::startIteration() {
 	return calculateNewPoint(marks);
 }
 
-std::vector<Function>::size_type IndexAlgorithmMultidimessional::calculateTaskResult(long double peanoX) {
+updatedV IndexAlgorithmMultidimessional::calculateTaskResult(long double peanoX) {
 	std::vector<long double> arg = parseArg(peanoX);
 
 	for (std::vector<Function>::size_type v = 0; v < constraintFunctions.size(); v++) {
 		auto z = constraintFunctions[v].getValue(arg);
 		if (z > 0 || v == constraintFunctions.size() - 1) {
 			taskResult[peanoX] = taskResultStruct(v, z);
-			pointClassification[v].insert(peanoX);
+			auto updatedIterator = pointClassification[v].insert(peanoX);
 			M = std::max(M, v);
-			return v;
+			return updatedV(v, updatedIterator.first);
 		}
 	}
 }
 
-void IndexAlgorithmMultidimessional::calculateLowerBounds(std::vector<Function>::size_type updatedV) {
-	for (auto i = pointClassification[updatedV].begin(); i != pointClassification[updatedV].end(); i++) {
-		for (auto j = pointClassification[updatedV].begin(); j != i; j++) {
-			long double xI = *i;
-			long double xJ = *j;
+void IndexAlgorithmMultidimessional::calculateLowerBounds(updatedV newV) {
+	auto v = newV.v;
+	auto iterator = newV.iterator;
 
-			long double zI = taskResult[xI].z;
-			long double zJ = taskResult[xJ].z;
+	for (auto i = pointClassification[v].begin(); i != iterator; i++) {
+		long double xI = *i;
+		long double xV = *iterator;
 
-			lowerBounds[updatedV] = std::max(lowerBounds[updatedV], fabs(zI - zJ) / powl(xI - xJ, 1.0 / function.getDimension()));
-		}
+		long double zI = taskResult[xI].z;
+		long double zV = taskResult[xV].z;
+
+		lowerBounds[v] = std::max(lowerBounds[v], fabs(zV - zI) / powl(xV - xI, 1.0 / function.getDimension()));
 	}
 
-	if (lowerBounds[updatedV] <= 0) lowerBounds[updatedV] = 1;
+	for (auto i = ++iterator; i != pointClassification[v].end(); i++) {
+		long double xI = *i;
+		long double xV = *iterator;
+
+		long double zI = taskResult[xI].z;
+		long double zV = taskResult[xV].z;
+
+		lowerBounds[v] = std::max(lowerBounds[v], fabs(zI - zV) / powl(xI - xV, 1.0 / function.getDimension()));
+	}
+
+	if (lowerBounds[v] <= 0) lowerBounds[v] = 1;
 }
 
 std::vector<long double> IndexAlgorithmMultidimessional::calculateMarks() {
@@ -136,21 +150,21 @@ long double IndexAlgorithmMultidimessional::calculateNewPoint(const std::vector<
 		long double delta = powl(currentPoint - previousPoint, 1.0 / function.getDimension());
 		long double R;
 
-		long double previousPointZ = taskResult[previousPoint].z;
-		long double previousPointV = taskResult[previousPoint].v;
+		auto previousPointZ = taskResult[previousPoint].z;
+		auto previousPointV = taskResult[previousPoint].v;
 		
-		long double currentPointZ = taskResult[currentPoint].z;
-		long double currentPointV = taskResult[currentPoint].v;
+		auto currentPointZ = taskResult[currentPoint].z;
+		auto currentPointV = taskResult[currentPoint].v;
 
 		if (previousPointV == currentPointV) {
 			R = delta + pow((currentPointZ - previousPointZ), 2) / (pow(rCoeff, 2) * pow(lowerBounds[currentPointV], 2) * delta) -
 				2 * (currentPointZ + previousPointZ - 2 * marks[currentPointV]) / (lowerBounds[currentPointV] * rCoeff);
 		}
 		else if (currentPointV > previousPointV) {
-			R = 2 * delta - 4 * (currentPointZ - marks[currentPointZ]) / (lowerBounds[currentPointV] * rCoeff);
+			R = 2 * delta - 4 * (currentPointZ - marks[currentPointV]) / (lowerBounds[currentPointV] * rCoeff);
 		}
 		else {
-			R = 2 * delta - 4 * (previousPointZ - marks[previousPointZ]) / (lowerBounds[previousPointV] * rCoeff);
+			R = 2 * delta - 4 * (previousPointZ - marks[previousPointV]) / (lowerBounds[previousPointV] * rCoeff);
 		}
 
 		if (previousPointIter == peanoPoints.begin()) {
@@ -175,6 +189,8 @@ long double IndexAlgorithmMultidimessional::calculateNewPoint(const std::vector<
 		long double currentPointZ = taskResult[newInterval.second].z;
 
 		long double v = taskResult[newInterval.second].v;
+
+		auto test = (newInterval.first + newInterval.second) / 2;
 
 		return (newInterval.first + newInterval.second) / 2 - sign(currentPointZ - lastPointZ) *
 			(1 / (2 * rCoeff)) * pow( fabsl(currentPointZ - lastPointZ) / lowerBounds[v], function.getDimension());
