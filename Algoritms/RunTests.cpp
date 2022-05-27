@@ -270,10 +270,10 @@ int main()
 					
 					std::vector<Function> constraints;
 					constraints.push_back(Function("0.01 * ( ((x - 2.2) ^ 2) + ((y - 1.2) ^ 2) - 2.25)", 2, "xy"));
-					constraints.push_back(Function("100 * ( 1 - ( (x - 1) ^ 2) / 1.44 - ((0.5 * y) ^ 2) )", 2, "xy"));
+					constraints.push_back(Function("100 * ( 1 - ( (x - 2) ^ 2) / 1.44 - ((0.5 * y) ^ 2) )", 2, "xy"));
 					constraints.push_back(Function("10 * (y - 1.5 - 1.5 * sin(6.283 * (x - 1.75)) )", 2, "xy"));
 
-					std::vector<domain> borders(2);
+					std::vector<domain> borders;
 					borders.push_back(domain(0, 4));
 					borders.push_back(domain(-1, 3));
 
@@ -282,10 +282,13 @@ int main()
 						{ Function("x + y + 0.5", 2, "xy"),
 						  Function("-x - y + 0.5", 2, "xy") },
 						{ domain(-2, 2), domain(-2, 2) });*/
-					IndexAlgorithmMultidimessional test(Function("x^2 + y^2", 2, "xy"),
+					/*IndexAlgorithmMultidimessional test(Function("x^2 + y^2", 2, "xy"),
 						{ Function("x + y + 0.5", 2, "xy") },
-						{ domain(-2, 2), domain(-2, 2) });
-					//IndexAlgorithmMultidimessional test(func, constraints, borders);
+						{ domain(-2, 2), domain(-2, 2) });*/
+					IndexAlgorithmMultidimessional test(func, constraints, borders);
+					/*IndexAlgorithmMultidimessional test(Function("(x^2 + y^2) / 5", 2, "xy"),
+						{ Function("0.3 - x - y", 2, "xy") },
+						{ domain(-1, 1), domain(-1, 1) });*/
 
 					auto res = test.run();
 					std::cout << "MIN POINT" << "\nX = " << res.arguments[0] << "\nY = " << res.arguments[1] << '\n';

@@ -1,6 +1,8 @@
 #include "IndexAlgorithmMultidimessional.h"
 #include "../ComputingLibrary/Legacy_x_to_y.h"
 
+#include <fstream>
+
 
 namespace {
 	std::vector<long double> arrayToVector(long double* array,  int size) {
@@ -55,17 +57,18 @@ std::vector<long double> IndexAlgorithmMultidimessional::parseArg(long double pe
 }
 
 long double IndexAlgorithmMultidimessional::startIteration() {
-	long double firstStartPoint = 0.4;
-	long double secondStartPoint = 0.6;
+	long double firstStartPoint = 0;
+	long double secondStartPoint = 1;
 
 	peanoPoints.insert(firstStartPoint);
 	peanoPoints.insert(secondStartPoint);
 
 	auto updatedV0 = calculateTaskResult(firstStartPoint);
-	auto updatedV1 = calculateTaskResult(secondStartPoint);
-
 	calculateLowerBounds(updatedV0);
+
+	auto updatedV1 = calculateTaskResult(secondStartPoint);
 	calculateLowerBounds(updatedV1);
+
 	auto marks = calculateMarks();
 	
 	return calculateNewPoint(marks);
@@ -99,14 +102,16 @@ void IndexAlgorithmMultidimessional::calculateLowerBounds(updatedV newV) {
 		lowerBounds[v] = std::max(lowerBounds[v], fabs(zV - zI) / powl(xV - xI, 1.0 / function.getDimension()));
 	}
 
-	for (auto i = ++iterator; i != pointClassification[v].end(); i++) {
+	for (auto i = std::next(iterator); i != pointClassification[v].end(); i++) {
 		long double xI = *i;
 		long double xV = *iterator;
 
 		long double zI = taskResult[xI].z;
 		long double zV = taskResult[xV].z;
 
-		lowerBounds[v] = std::max(lowerBounds[v], fabs(zI - zV) / powl(xI - xV, 1.0 / function.getDimension()));
+		auto temp = fabs(zI - zV) / powl(xI - xV, 1.0 / function.getDimension());
+
+		lowerBounds[v] = std::max(lowerBounds[v], temp);
 	}
 
 	if (lowerBounds[v] <= 0) lowerBounds[v] = 1;
@@ -190,10 +195,8 @@ long double IndexAlgorithmMultidimessional::calculateNewPoint(const std::vector<
 
 		long double v = taskResult[newInterval.second].v;
 
-		auto test = (newInterval.first + newInterval.second) / 2;
-
 		return (newInterval.first + newInterval.second) / 2 - sign(currentPointZ - lastPointZ) *
-			(1 / (2 * rCoeff)) * pow( fabsl(currentPointZ - lastPointZ) / lowerBounds[v], function.getDimension());
+			(1 / (2 * rCoeff)) * pow(fabsl(currentPointZ - lastPointZ) / lowerBounds[v], function.getDimension());
 	}
 }
 
@@ -208,6 +211,7 @@ optimalPoint IndexAlgorithmMultidimessional::run() {
 		auto marks = calculateMarks();
 		
 		newPoint = calculateNewPoint(marks);
+
 		iterCount++;
 	}
 

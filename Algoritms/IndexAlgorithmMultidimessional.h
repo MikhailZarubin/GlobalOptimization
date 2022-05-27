@@ -70,6 +70,7 @@ public:
 	IndexAlgorithmMultidimessional(const Function& func, const std::vector<Function>& constraintFunc, 
 		const std::vector<domain>& borders, long double accur = 0.001, long double rCoeff = 3);
 	optimalPoint run();
+
 	int getIterCount() const { return iterCount; }
 };
 
