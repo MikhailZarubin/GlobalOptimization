@@ -201,6 +201,10 @@ long double IndexAlgorithmMultidimessional::calculateNewPoint(const std::vector<
 }
 
 optimalPoint IndexAlgorithmMultidimessional::run() {
+	points.clear();
+	points.push_back({ borders[0].leftBorder, borders[1].leftBorder });
+	points.push_back({ borders[0].rightBorder, borders[1].rightBorder });
+
 	iterCount = 2;
 	auto newPoint = startIteration();
 
@@ -211,11 +215,13 @@ optimalPoint IndexAlgorithmMultidimessional::run() {
 		auto marks = calculateMarks();
 		
 		newPoint = calculateNewPoint(marks);
+		points.push_back(parseArg(newPoint));
 
 		iterCount++;
 	}
 
 	auto arguments = parseArg(newPoint);
+	points.push_back(arguments);
 	auto value = function.getValue(arguments);
 
 	return optimalPoint(value, arguments);

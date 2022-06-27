@@ -57,7 +57,9 @@ class IndexAlgorithmMultidimessional {
 	std::vector<Function>::size_type M;
 
 	bool stopCheck;
+
 	int iterCount;
+	std::vector<std::vector<long double>> points;
 
 	long double startIteration();
 	std::vector<long double> parseArg(long double peanoX);
@@ -68,9 +70,10 @@ class IndexAlgorithmMultidimessional {
 
 public:
 	IndexAlgorithmMultidimessional(const Function& func, const std::vector<Function>& constraintFunc, 
-		const std::vector<domain>& borders, long double accur = 0.001, long double rCoeff = 3);
+		const std::vector<domain>& borders, long double accur = 0.001, long double rCoeff = 2);
 	optimalPoint run();
-
+	
+	std::vector<std::vector<long double>> getPoints() const { return points; };
 	int getIterCount() const { return iterCount; }
 };
 

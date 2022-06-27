@@ -25,6 +25,7 @@ namespace CppWinForm1 {
 	{
 		Graphics^ gr;
 		Pen^ penLine, ^ penFunction, ^ penConditions, ^ penPoint;
+	private: System::Windows::Forms::Button^ button2;
 	private: System::Windows::Forms::Button^ button1;
 
 
@@ -64,6 +65,7 @@ namespace CppWinForm1 {
 		   void InitializeComponent(void)
 		   {
 			   this->button1 = (gcnew System::Windows::Forms::Button());
+			   this->button2 = (gcnew System::Windows::Forms::Button());
 			   this->SuspendLayout();
 			   // 
 			   // button1
@@ -76,9 +78,23 @@ namespace CppWinForm1 {
 			   this->button1->Name = L"button1";
 			   this->button1->Size = System::Drawing::Size(350, 60);
 			   this->button1->TabIndex = 0;
-			   this->button1->Text = L"Start!";
+			   this->button1->Text = L"Start one-dimensional!";
 			   this->button1->UseVisualStyleBackColor = false;
 			   this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click_1);
+			   // 
+			   // button2
+			   // 
+			   this->button2->BackColor = System::Drawing::SystemColors::Highlight;
+			   this->button2->FlatStyle = System::Windows::Forms::FlatStyle::Popup;
+			   this->button2->Font = (gcnew System::Drawing::Font(L"Calibri", 12, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
+				   static_cast<System::Byte>(204)));
+			   this->button2->Location = System::Drawing::Point(373, 567);
+			   this->button2->Name = L"button2";
+			   this->button2->Size = System::Drawing::Size(350, 60);
+			   this->button2->TabIndex = 1;
+			   this->button2->Text = L"Start multi-dimensional!";
+			   this->button2->UseVisualStyleBackColor = false;
+			   this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click);
 			   // 
 			   // MyForm
 			   // 
@@ -86,6 +102,7 @@ namespace CppWinForm1 {
 			   this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			   this->BackColor = System::Drawing::SystemColors::Window;
 			   this->ClientSize = System::Drawing::Size(1082, 1053);
+			   this->Controls->Add(this->button2);
 			   this->Controls->Add(this->button1);
 			   this->Margin = System::Windows::Forms::Padding(4);
 			   this->Name = L"MyForm";
@@ -99,6 +116,7 @@ namespace CppWinForm1 {
 private: System::Void button1_Click_1(System::Object^ sender, System::EventArgs^ e) {
 	//draw a coordinate system
 	this->button1->Visible = false;
+	this->button2->Visible = false;
 
 	gr->DrawLine(penLine, 147, 350, 750, 350);
 	gr->DrawLine(penLine, 450, 100, 450, 603);
@@ -202,6 +220,63 @@ private: System::Void button1_Click_1(System::Object^ sender, System::EventArgs^
 	float y = static_cast<float>(350. - func.getValue(pointContainer[pointContainer.size() - 2]) * stepFunction);
 	gr->DrawEllipse(penPoint, x, y, 5., 5.);
 
+}
+private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
+	//draw a coordinate system
+	this->button1->Visible = false;
+	this->button2->Visible = false;
+
+	gr->DrawLine(penLine, 100, 600, 600, 600);
+	gr->DrawLine(penLine, 100, 100, 600, 100);
+	gr->DrawLine(penLine, 100, 100, 100, 600);
+	gr->DrawLine(penLine, 600, 100, 600, 600);
+
+	//initialize point 
+	std::ifstream pointFile("../Algoritms/outputFile.txt");
+	std::vector<long double>pointsX;
+	std::vector<long double>pointsY;
+
+	std::vector<long double> borders;
+
+	const int bufferSize = 250;
+	char buffer[bufferSize];
+
+	for (int i = 0; i < 2; i++) {
+		pointFile.getline(buffer, bufferSize, ' ');
+		borders.push_back(atof(buffer));
+		pointsX.push_back(atof(buffer));
+
+		pointFile.getline(buffer, bufferSize, '\n');
+		borders.push_back(atof(buffer));
+		pointsY.push_back(atof(buffer));
+	}
+
+	long double deltaX = borders[2] - borders[0];
+	long double deltaY = borders[3] - borders[1];
+
+	while (!pointFile.eof())
+	{
+		pointFile.getline(buffer, bufferSize, ' ');
+		pointsX.push_back(atof(buffer));
+
+		pointFile.getline(buffer, bufferSize, '\n');
+		pointsY.push_back(atof(buffer));
+	}
+
+	//drawing point
+	for (std::vector<long double>::size_type i = 0; i < pointsX.size() - 2; i++)
+	{
+		float x = static_cast<float>(100. + 500. * ((pointsX[i] - borders[0]) / deltaX));
+		float y = static_cast<float>(100. + 500. * ((pointsY[i] - borders[1]) / deltaY));
+
+		gr->DrawEllipse(penLine, x, y, 2., 2.);
+	}
+
+	this->penPoint->Width = 5.0;
+	this->penPoint->Color = Color::Red;
+	float x = static_cast<float>(100. + 500 * ((pointsX[pointsX.size() - 2] - borders[0]) / deltaX));
+	float y = static_cast<float>(100. + 500 * ((pointsY[pointsY.size() - 2] - borders[1]) / deltaY));
+	gr->DrawEllipse(penPoint, x, y, 5., 5.);
 }
 };
 }

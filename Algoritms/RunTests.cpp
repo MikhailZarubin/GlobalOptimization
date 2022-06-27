@@ -196,7 +196,7 @@ int main()
 			if (testStrategy == 1)
 			{
 				int dimension;
-				std::cout << "\nDimension = ";
+				std::cout << "\nDimension (1 or 2) = ";
 				std::cin >> dimension;
 
 				if (dimension == 1)
@@ -266,7 +266,68 @@ int main()
 				//NEW
 				else
 				{
-					Function func("- 1.5 * x * x * exp(1 - x * x - 20.25 * (x - y) * (x - y)) - ((0.5 * (x - 1) * (y - 1)) ^ 4) * exp(2 - ((0.5 * (x - 1)) ^ 4) - ((y - 1) ^ 4))", 2, "xy");
+					long double coeffForFunctions;
+					std::vector<domain> borders(2);
+
+					std::cout << "FUNC(x, y): ";
+					std::cin >> expression;
+
+					std::cout << "R_COEFF: ";
+					std::cin >> coeffForFunctions;
+
+					std::cout << "LEFT_BORDER FOR X: ";
+					std::cin >> borders[0].leftBorder;
+					std::cout << "RIGHT_BORDER FOR X: ";
+					std::cin >> borders[0].rightBorder;
+
+					std::cout << "LEFT_BORDER FOR Y: ";
+					std::cin >> borders[1].leftBorder;
+					std::cout << "RIGHT_BORDER FOR Y: ";
+					std::cin >> borders[1].rightBorder;
+
+					vector<FunctionBorder>::size_type countConditions;
+					std::cout << "COUNT CONDITIONS:";
+					std::cin >> countConditions;
+
+					vector<Function> conditionsContainer;
+					for (vector<FunctionBorder>::size_type i = 0; i < countConditions; i++)
+					{
+						string conditionsNumberI;
+
+						std::cout << "CONDITION " << i << ":";
+						std::cin >> conditionsNumberI;
+
+						conditionsContainer.push_back(Function(conditionsNumberI, dimension, "xy"));
+					}
+
+					std::cout << "ACCURACY: ";
+					std::cin >> accuracy;
+
+					IndexAlgorithmMultidimessional testFunc(Function(expression, dimension, "xy"), conditionsContainer, borders, accuracy, coeffForFunctions);
+					auto res = testFunc.run();
+
+					// for GUI
+					std::ofstream pointFile("outputFile.txt");
+					pointFile.clear();
+
+					auto points = testFunc.getPoints();
+					for (const auto& pointVector : points) {
+						for (const auto& point : pointVector) {
+							pointFile << point << ' ';
+						}
+						pointFile << '\n';
+					}
+
+					pointFile.close();
+					// end GUI
+
+					std::cout << "MIN VALUE: " << res.value << '\n' << "COORDINATE: ";
+					for (const auto& point : res.arguments) {
+						std::cout << point << ' ';
+					}
+					std::cout << '\n' << "ITER_COUNT: " << testFunc.getIterCount() << '\n';
+
+					/*Function func("- 1.5 * x * x * exp(1 - x * x - 20.25 * (x - y) * (x - y)) - ((0.5 * (x - 1) * (y - 1)) ^ 4) * exp(2 - ((0.5 * (x - 1)) ^ 4) - ((y - 1) ^ 4))", 2, "xy");
 					
 					std::vector<Function> constraints;
 					constraints.push_back(Function("0.01 * ( ((x - 2.2) ^ 2) + ((y - 1.2) ^ 2) - 2.25)", 2, "xy"));
@@ -277,26 +338,26 @@ int main()
 					borders.push_back(domain(0, 4));
 					borders.push_back(domain(-1, 3));
 
-					//IndexAlgorithmMultidimessional test(Function("x^2 + y^2", 2, "xy"), {}, {domain(-2, 2), domain(-2, 2)});
-					/*IndexAlgorithmMultidimessional test(Function("x^2 + y^2", 2, "xy"),
-						{ Function("x + y + 0.5", 2, "xy"),
-						  Function("-x - y + 0.5", 2, "xy") },
-						{ domain(-2, 2), domain(-2, 2) });*/
-					/*IndexAlgorithmMultidimessional test(Function("x^2 + y^2", 2, "xy"),
-						{ Function("x + y + 0.5", 2, "xy") },
-						{ domain(-2, 2), domain(-2, 2) });*/
-					IndexAlgorithmMultidimessional test(func, constraints, borders);
-					/*IndexAlgorithmMultidimessional test(Function("(x^2 + y^2) / 5", 2, "xy"),
-						{ Function("0.3 - x - y", 2, "xy") },
-						{ domain(-1, 1), domain(-1, 1) });*/
-
-					auto res = test.run();
-					std::cout << "MIN POINT" << "\nX = " << res.arguments[0] << "\nY = " << res.arguments[1] << '\n';
+					IndexAlgorithmMultidimessional testFunc(func, constraints, borders2);
+					auto res = testFunc.run();
+					std::cout << "MIN POINT" << "\nX = " << res.arguments[0] << "\n";//Y = " << res.arguments[1] << '\n';
 					std::cout << "MIN VALUE: " << res.value << '\n';
 					std::cout << "IterCount = " << test.getIterCount() << '\n';
 
+					std::ofstream pointFile("outputFile.txt");
+					pointFile.clear();
+
+					auto points = testFunc.getPoints();
+					for (const auto& pointVector : points) {
+						for (const auto& point : pointVector) {
+							pointFile << point << ' ';
+						}
+						pointFile << '\n';
+					}
+
+					pointFile.close();*/
+
 				}
-				//END NEW
 			}
 
 			else if (testStrategy == 2)
